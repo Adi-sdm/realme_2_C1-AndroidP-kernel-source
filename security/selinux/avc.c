@@ -350,6 +350,7 @@ static struct avc_xperms_decision_node
 
 	xpd_node = kmem_cache_zalloc(avc_xperms_decision_cachep,
 			GFP_NOWAIT | __GFP_NOWARN);
+	xpd_node = kmem_cache_zalloc(avc_xperms_decision_cachep, GFP_NOWAIT);
 	if (!xpd_node)
 		return NULL;
 
@@ -357,18 +358,21 @@ static struct avc_xperms_decision_node
 	if (which & XPERMS_ALLOWED) {
 		xpd->allowed = kmem_cache_zalloc(avc_xperms_data_cachep,
 						GFP_NOWAIT | __GFP_NOWARN);
+						GFP_NOWAIT);
 		if (!xpd->allowed)
 			goto error;
 	}
 	if (which & XPERMS_AUDITALLOW) {
 		xpd->auditallow = kmem_cache_zalloc(avc_xperms_data_cachep,
 						GFP_NOWAIT | __GFP_NOWARN);
+						GFP_NOWAIT);
 		if (!xpd->auditallow)
 			goto error;
 	}
 	if (which & XPERMS_DONTAUDIT) {
 		xpd->dontaudit = kmem_cache_zalloc(avc_xperms_data_cachep,
 						GFP_NOWAIT | __GFP_NOWARN);
+						GFP_NOWAIT);
 		if (!xpd->dontaudit)
 			goto error;
 	}
@@ -398,6 +402,7 @@ static struct avc_xperms_node *avc_xperms_alloc(void)
 
 	xp_node = kmem_cache_zalloc(avc_xperms_cachep,
 			GFP_NOWAIT | __GFP_NOWARN);
+	xp_node = kmem_cache_zalloc(avc_xperms_cachep, GFP_NOWAIT);
 	if (!xp_node)
 		return xp_node;
 	INIT_LIST_HEAD(&xp_node->xpd_head);
@@ -551,6 +556,7 @@ static struct avc_node *avc_alloc_node(void)
 	struct avc_node *node;
 
 	node = kmem_cache_zalloc(avc_node_cachep, GFP_NOWAIT | __GFP_NOWARN);
+	node = kmem_cache_zalloc(avc_node_cachep, GFP_NOWAIT);
 	if (!node)
 		goto out;
 
