@@ -142,6 +142,28 @@ int squashfs_readpages_block(struct page *target_page,
 		if (end_index > file_end)
 			end_index = file_end;
 		actor_pages = end_index - start_index + 1;
+	struct inode *i = target_page->mapping->host;
+	struct squashfs_cache_entry *buffer = squashfs_get_datablock(i->i_sb,
+						 block, bsize);
+	int bytes = buffer->length, res = buffer->error, n, offset = 0;
+
+	if (res) {
+		ERROR("Unable to read page, block %llx, size %x\n", block,
+			bsize);
+		goto out;
+	}
+
+	for (n = 0; n < pages && bytes > 0; n++,
+			bytes -= PAGE_SIZE, offset += PAGE_SIZE) {
+		int avail = min_t(int, bytes, PAGE_SIZE);
+
+		if (page[n] == NULL)
+			continue;
+
+		squashfs_fill_page(page[n], buffer, offset, avail);
+		unlock_page(page[n]);
+		if (page[n] != target_page)
+			put_page(page[n]);
 	}
 
 	actor = actor_from_page_cache(actor_pages, target_page,
